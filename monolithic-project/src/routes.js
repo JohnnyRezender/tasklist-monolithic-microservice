@@ -14,5 +14,6 @@ routes.delete('/tasks',tasksController.remove);
 
 routes.put('/tasks/:ID_TASK_TAS', tasksController.update);
 
+routes.get('/tasks/defaultTasks', tasksController.defaultTasks);
 
 module.exports = routes;

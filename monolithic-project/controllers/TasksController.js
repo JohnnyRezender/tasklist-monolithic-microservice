@@ -2,6 +2,7 @@ import {parseISO, startOfMinute, format, isPast} from 'date-fns';
 import {Request, Response} from 'express';
 import knex from '../database/connection';
 import Queue from '../lib/queue';
+import defaultTasks from '../helpers/defaultTasks';
 
 class TasksController
 {
@@ -28,7 +29,7 @@ class TasksController
            }
        });
 
-        await Queue.add('sendNotification',{text:"Pegando todos as tarefas"});
+        await Queue.add('sendNotification',{message:"Pegando todos as tarefas"});
 
         return Response.status(200).json(serializedTasks);
    }
@@ -184,6 +185,11 @@ class TasksController
             Queue.add('scheduleReminder', {method: 'remind',task:`lembrete: ${ST_TASK_TAS}`, date: DT_TASK_TAS});
 
             return Response.status(200).json(`Tartefa#${ID_TASK_TAS} alterada com sucesso!`)
+    }
+
+    async defaultTasks(Request, Response)
+    {
+        return Response.json(defaultTasks);
     }
 
 }
