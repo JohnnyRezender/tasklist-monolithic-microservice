@@ -1,10 +1,7 @@
-const {parseISO, startOfMinute, format, isPast} = require('date-fns');
-const {Request, Response} = require('express');
-const knex                = require('../database/connection');
-// const schedule            = require('node-schedule');
-// const TelegramBot         = require('node-telegram-bot-api');
-
-require('dotenv').config();
+import {parseISO, startOfMinute, format, isPast} from 'date-fns';
+import {Request, Response} from 'express';
+import knex from '../database/connection';
+import Queue from '../lib/queue';
 
 class TasksController
 {
@@ -31,7 +28,9 @@ class TasksController
            }
        });
 
-       return Response.status(200).json(serializedTasks);
+        await Queue.add('sendNotification',{text:"Pegando todos as tarefas"});
+
+        return Response.status(200).json(serializedTasks);
    }
 
     /**
@@ -83,13 +82,7 @@ class TasksController
 
         await transaction.commit();
 
-        // const a = schedule.scheduleJob(DT_TASK_TAS, function ()
-        // {
-        //     RemindersController.bot.sendMessage(
-        //         RemindersController.chatId,
-        //         "Tarefa: "+ST_TASK_TAS
-        //     );
-        // });
+       Queue.add('scheduleReminder', {method: 'remind',task:`lembrete: ${ST_TASK_TAS}`, date: DT_TASK_TAS});
 
         return Response
             .status(200)
@@ -136,9 +129,6 @@ class TasksController
         const {ID_TASK_TAS} = Request.params;
 
         const {ST_TASK_TAS, DT_TASK_TAS, ST_STATUS_TAS} = Request.body;
-        console.log(ST_TASK_TAS)
-        console.log(DT_TASK_TAS)
-        console.log(ST_STATUS_TAS)
 
         const transaction = await knex.transaction();
         const idTaskExists = 
@@ -191,13 +181,7 @@ class TasksController
 
             await transaction.commit();
 
-            // schedule.scheduleJob(DT_TASK_TAS, function ()
-            // {
-            //     RemindersController.bot.sendMessage(
-            //         RemindersController.chatId,
-            //         "Lembrete: "+ST_TASK_TAS
-            //     );
-            // });
+            Queue.add('scheduleReminder', {method: 'remind',task:`lembrete: ${ST_TASK_TAS}`, date: DT_TASK_TAS});
 
             return Response.status(200).json(`Tartefa#${ID_TASK_TAS} alterada com sucesso!`)
     }
