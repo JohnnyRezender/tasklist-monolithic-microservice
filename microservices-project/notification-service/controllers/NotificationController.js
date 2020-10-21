@@ -1,5 +1,6 @@
 import {Request, Response} from 'express';
 import knex from '../database/connection';
+import Notification from '../lib/notification';
 
 class NotificationController
 {
@@ -22,11 +23,23 @@ class NotificationController
           ST_STATUS_NOT: ST_STATUS_NOT.toUpperCase()
      };
 
-     //Disparar notificação
+     let taskCreated = '';
+     try {
+       taskCreated = await transaction("NOTIFICATIONS").insert(notification);
 
-     const taskCreated = await transaction("NOTIFICATIONS").insert(notification);
+       if (notification.ST_STATUS_NOT == 'COMPLETA') {
+         Notification.send(ST_NOTIFICATION_NOT)
+       }
 
-     await transaction.commit();
+       await transaction.commit();
+
+     } catch (error) {
+        await transaction.rollback();
+
+        return Response
+          .status(500)
+          .json({msg:`Não foi possível enviar a notificação:`, erro: error.message})
+     }
 
      return Response
          .status(200)
