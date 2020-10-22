@@ -1,6 +1,8 @@
 import {parseISO, startOfMinute, format, isPast} from 'date-fns';
 import {Request, Response} from 'express';
 import knex from '../database/connection';
+import axios from 'axios';
+import api from '../lib/api';
 
 class TaskSchedulerController
 {
@@ -41,7 +43,7 @@ class TaskSchedulerController
      */
     async create (Request, Response)
     {
-        const  {ST_TASK_TAS, ST_STATUS_TAS, DT_TASK_TAS} = Request.body;
+        const  {ST_TASK_TAS, ST_STATUS_TAS, DT_TASK_TAS, FL_LEMBRETE} = Request.body;
         
         const transaction = await knex.transaction();
 
@@ -75,16 +77,39 @@ class TaskSchedulerController
                 .json({error: 'Tarefa já criado!'});
         };
 
-        const taskCreated = await transaction("TASKS").insert(task);
+        let result = "";
+        const taskCreated = 
+            await transaction("TASKS")
+            .insert(task)
+            .then(function(response) {
+                result = `Tarefa#${response} criado com sucesso!`;
+                if (FL_LEMBRETE) {
+
+                    const event = {
+                        dtNotificacao: task.DT_TASK_TAS,
+                        message: task.ST_TASK_TAS
+                    };
+
+                    //Chamar serviço task-reminder-service para agendar lembrete
+                    // axios.put(`${api.REMINDER_API_URL}/tasksSchedule`, event)
+                    //     .then(function(response){
+                    //         console.log('Lembrete agendado!')
+                    //         result += " Lembrete agendado!";
+                    //     }
+                    // );
+                }
+        });
 
         await transaction.commit();
 
-        //Chamar serviço task-reminder-service
-       //Queue.add('scheduleReminder', {method: 'remind',task:`lembrete: ${ST_TASK_TAS}`, date: DT_TASK_TAS});
+        await axios.post("http://localhost:4005/events", {
+            type: 'TaskCreated',
+            data: task
+        });
 
         return Response
             .status(200)
-            .json(`Tarefa#${taskCreated} criado com sucesso!`)
+            .json(result)
     }
 
     /**
