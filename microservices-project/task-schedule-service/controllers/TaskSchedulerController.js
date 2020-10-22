@@ -104,7 +104,8 @@ class TaskSchedulerController
 
         await axios.post("http://localhost:4005/events", {
             type: 'TaskCreated',
-            data: task
+            data: task,
+            postId: Request.params.id
         });
 
         return Response

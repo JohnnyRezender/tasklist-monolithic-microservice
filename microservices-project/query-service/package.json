@@ -1,0 +1,24 @@
+{
+  "name": "query-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "knex:migrate": "knex --knexfile knexfile.js migrate:latest",
+    "knex:seed": "knex --knexfile knexfile.js seed:run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "date-fns": "^2.16.1",
+    "express": "^4.17.1",
+    "knex": "^0.21.6",
+    "nodemon": "^2.0.6",
+    "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "sucrase": "^3.16.0"
+  }
+}

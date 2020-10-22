@@ -1,18 +1,18 @@
 import express from 'express';
 
-import NotificationController from '../controllers/NotificationController';
+import QueryController from '../controllers/QueryController';
 
 const routes = express.Router();
 
-const notificationController = new NotificationController();
+const queryController = new QueryController();
 
-routes.put('/notification',notificationController.send);
+routes.get('/tasks',queryController.index);
+
 
 routes.post('/events', (req, res) => {
     console.log("Evento recebido: ", req.body.type)
 
     res.send({});
 });
-
 
 export default routes;
