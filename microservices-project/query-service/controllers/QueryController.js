@@ -7,13 +7,23 @@ class QueryController
 
     async index (Request, Response)
     {
-        return Response
-            .status(200)
-            .json(`Retornar registros`)
+        const data = 
+            await knex('DATA')
+            .select('DATA.*');
+
+        const serializedData = data.map(data => {
+
+            return {
+                type: data.type,
+                data: JSON.parse(data.data),
+            }
+        });
+
+        return Response.status(200).json(serializedData);
     }
 
     /**
-     * Endpoint para criar uma tarefa
+     * Endpoint para salvar um data
      *
      * @param Request
      * @param response
@@ -21,22 +31,21 @@ class QueryController
      * @return success
      * @throws error
      */
-    async post (Request, Response)
+    async event (Request, Response)
     {
+        console.log("Evento Recebido")
         const  {type, data} = Request.body;
 
         const transaction = await knex.transaction();
 
-        // const taskDateTime = startOfMinute(parseISO(DT_TASK_TAS));
-
-        const data = {
+        const insertData = {
             type,
-            data
+            data: JSON.stringify(data),
         };
-        console.log(data);
+
         const dataCreated = 
-            await transaction("query")
-            .insert(data);
+            await transaction("DATA")
+            .insert(insertData);
 
         await transaction.commit();
 

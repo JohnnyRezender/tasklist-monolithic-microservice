@@ -1,6 +1,7 @@
 import {parseISO, startOfMinute, format, isPast} from 'date-fns';
 import {Request, Response} from 'express';
 import knex from '../database/connection';
+import {randomBytes} from 'crypto';
 import axios from 'axios';
 import api from '../lib/api';
 
@@ -102,8 +103,10 @@ class TaskSchedulerController
 
         await transaction.commit();
 
+        task.id = randomBytes(4).toString('hex');
+
         await axios.post("http://localhost:4005/events", {
-            type: 'TaskCreated',
+            type: 'taskCreated',
             data: task,
             postId: Request.params.id
         });

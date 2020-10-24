@@ -6,13 +6,10 @@ const routes = express.Router();
 
 const queryController = new QueryController();
 
-routes.get('/tasks',queryController.index);
+routes.get('/query',queryController.index);
 
+routes.post('/query',queryController.event);
 
-routes.post('/events', (req, res) => {
-    console.log("Evento recebido: ", req.body.type)
-
-    res.send({});
-});
+routes.post('/events',queryController.event);
 
 export default routes;
