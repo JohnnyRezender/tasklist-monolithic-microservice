@@ -8,7 +8,7 @@ app.use(express.json());
 
 app.post('/events', (req, res) => {
     const event = req.body;
-    console.log('saaaa')
+
     axios.post("http://localhost:4002/events", event);
     // axios.post("http://localhost:3001/events", event);
     // axios.post("http://localhost:3002/events", event);

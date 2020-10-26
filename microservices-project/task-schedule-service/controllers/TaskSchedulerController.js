@@ -90,22 +90,17 @@ class TaskSchedulerController
                         dtNotificacao: task.DT_TASK_TAS,
                         message: task.ST_TASK_TAS
                     };
-
-                    //Chamar serviço task-reminder-service para agendar lembrete
-                    // axios.put(`${api.REMINDER_API_URL}/tasksSchedule`, event)
-                    //     .then(function(response){
-                    //         console.log('Lembrete agendado!')
-                    //         result += " Lembrete agendado!";
-                    //     }
-                    // );
                 }
+
+                return response;
         });
 
         await transaction.commit();
 
-        task.id = randomBytes(4).toString('hex');
+        task.ID_TASK_TAS = `${taskCreated}`;
 
-        await axios.post("http://localhost:4005/events", {
+        await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
+            id: randomBytes(4).toString('hex'),
             type: 'taskCreated',
             data: task,
             postId: Request.params.id
@@ -136,6 +131,15 @@ class TaskSchedulerController
                 .status(200)
                 .json('Tarefa já deletada!');    
         }
+
+        await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
+            type: 'taskDeleted',
+            id: randomBytes(4).toString('hex'),
+            data: {
+                ID_TASK_TAS: ID_TASK_TAS
+            },
+            deleteId: Request.params.id
+        });
 
         return Response
             .status(200)
@@ -208,8 +212,20 @@ class TaskSchedulerController
 
             await transaction.commit();
 
-            //Chamar serviço task-reminder-service
-            //Queue.add('scheduleReminder', {method: 'remind',task:`lembrete: ${ST_TASK_TAS}`, date: DT_TASK_TAS});
+            task.id = randomBytes(4).toString('hex');
+
+            await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
+                type: 'taskUpdated',
+                id: randomBytes(4).toString('hex'),
+                data: {
+                    ID_TASK_TAS: ID_TASK_TAS,
+                    ST_TASK_TAS: ST_TASK_TAS,
+                    DT_TASK_TAS: DT_TASK_TAS,
+                    ST_STATUS_TAS: ST_STATUS_TAS
+                },
+                postId: Request.params.id
+            });
+    
 
             return Response.status(200).json(`Tartefa#${ID_TASK_TAS} alterada com sucesso!`)
     }
