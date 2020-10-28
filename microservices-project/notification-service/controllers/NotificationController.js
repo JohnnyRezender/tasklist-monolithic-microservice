@@ -45,9 +45,9 @@ class NotificationController
      }
 
       await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
-          id: randomBytes(4).toString('hex'),
-          type: 'notificationSended',
-          data: {
+        type: 'notificationSended',
+        data: {
+            id: randomBytes(4).toString('hex'),
             ST_NOTIFICATION_NOT: ST_NOTIFICATION_NOT,
             ST_STATUS_NOT: ST_STATUS_NOT,
           },

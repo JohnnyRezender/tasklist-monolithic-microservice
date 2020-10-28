@@ -33,7 +33,7 @@ class QueryController
      */
     async event (Request, Response)
     {
-        console.log("Evento Recebido")
+        console.log("Evento recebido: ", Request.body.type)
         const  {type, data} = Request.body;
 
         const transaction = await knex.transaction();

@@ -6,7 +6,7 @@ import schedule from 'node-schedule';
 export default {
     scheduleReminder(params) {
         const {dtNotificacao, message} = params;
-
+        console.log("Agendando notificação");
         const a = schedule.scheduleJob(dtNotificacao, function ()
         {
             const event = {

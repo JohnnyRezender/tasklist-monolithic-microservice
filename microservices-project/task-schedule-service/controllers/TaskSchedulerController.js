@@ -84,13 +84,6 @@ class TaskSchedulerController
             .insert(task)
             .then(function(response) {
                 result = `Tarefa#${response} criado com sucesso!`;
-                if (FL_LEMBRETE) {
-
-                    const event = {
-                        dtNotificacao: task.DT_TASK_TAS,
-                        message: task.ST_TASK_TAS
-                    };
-                }
 
                 return response;
         });
@@ -98,9 +91,10 @@ class TaskSchedulerController
         await transaction.commit();
 
         task.ID_TASK_TAS = `${taskCreated}`;
+        task.id = randomBytes(4).toString('hex'),
+        task.FL_LEMBRETE = FL_LEMBRETE;
 
         await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
-            id: randomBytes(4).toString('hex'),
             type: 'taskCreated',
             data: task,
             postId: Request.params.id
@@ -212,12 +206,10 @@ class TaskSchedulerController
 
             await transaction.commit();
 
-            task.id = randomBytes(4).toString('hex');
-
             await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
                 type: 'taskUpdated',
-                id: randomBytes(4).toString('hex'),
                 data: {
+                    id: randomBytes(4).toString('hex'),
                     ID_TASK_TAS: ID_TASK_TAS,
                     ST_TASK_TAS: ST_TASK_TAS,
                     DT_TASK_TAS: DT_TASK_TAS,
