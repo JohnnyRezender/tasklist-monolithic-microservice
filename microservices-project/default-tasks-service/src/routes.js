@@ -8,5 +8,10 @@ const defaultTasksController = new DefaultTasksController();
 
 routes.get('/defaultTasks',defaultTasksController.index);
 
+routes.post('/events', (req, res) => {
+    console.log("Evento recebido: ", req.body.type)
+
+    res.send({});
+});
 
 export default routes;

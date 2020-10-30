@@ -1,6 +1,9 @@
 import {parseISO, startOfMinute, format, isPast} from 'date-fns';
 import {Request, Response} from 'express';
 import knex from '../database/connection';
+import {randomBytes} from 'crypto';
+import axios from 'axios';
+import api from '../lib/api';
 
 class TaskSchedulerController
 {
@@ -41,7 +44,7 @@ class TaskSchedulerController
      */
     async create (Request, Response)
     {
-        const  {ST_TASK_TAS, ST_STATUS_TAS, DT_TASK_TAS} = Request.body;
+        const  {ST_TASK_TAS, ST_STATUS_TAS, DT_TASK_TAS, FL_LEMBRETE} = Request.body;
         
         const transaction = await knex.transaction();
 
@@ -75,16 +78,31 @@ class TaskSchedulerController
                 .json({error: 'Tarefa já criado!'});
         };
 
-        const taskCreated = await transaction("TASKS").insert(task);
+        let result = "";
+        const taskCreated = 
+            await transaction("TASKS")
+            .insert(task)
+            .then(function(response) {
+                result = `Tarefa#${response} criado com sucesso!`;
+
+                return response;
+        });
 
         await transaction.commit();
 
-        //Chamar serviço task-reminder-service
-       //Queue.add('scheduleReminder', {method: 'remind',task:`lembrete: ${ST_TASK_TAS}`, date: DT_TASK_TAS});
+        task.ID_TASK_TAS = `${taskCreated}`;
+        task.id = randomBytes(4).toString('hex'),
+        task.FL_LEMBRETE = FL_LEMBRETE;
+
+        await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
+            type: 'taskCreated',
+            data: task,
+            postId: Request.params.id
+        });
 
         return Response
             .status(200)
-            .json(`Tarefa#${taskCreated} criado com sucesso!`)
+            .json(result)
     }
 
     /**
@@ -107,6 +125,15 @@ class TaskSchedulerController
                 .status(200)
                 .json('Tarefa já deletada!');    
         }
+
+        await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
+            type: 'taskDeleted',
+            id: randomBytes(4).toString('hex'),
+            data: {
+                ID_TASK_TAS: ID_TASK_TAS
+            },
+            deleteId: Request.params.id
+        });
 
         return Response
             .status(200)
@@ -179,8 +206,18 @@ class TaskSchedulerController
 
             await transaction.commit();
 
-            //Chamar serviço task-reminder-service
-            //Queue.add('scheduleReminder', {method: 'remind',task:`lembrete: ${ST_TASK_TAS}`, date: DT_TASK_TAS});
+            await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
+                type: 'taskUpdated',
+                data: {
+                    id: randomBytes(4).toString('hex'),
+                    ID_TASK_TAS: ID_TASK_TAS,
+                    ST_TASK_TAS: ST_TASK_TAS,
+                    DT_TASK_TAS: DT_TASK_TAS,
+                    ST_STATUS_TAS: ST_STATUS_TAS
+                },
+                postId: Request.params.id
+            });
+    
 
             return Response.status(200).json(`Tartefa#${ID_TASK_TAS} alterada com sucesso!`)
     }

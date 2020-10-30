@@ -14,4 +14,11 @@ routes.delete('/tasks',taskSchedulerController.remove);
 
 routes.put('/tasks/:ID_TASK_TAS', taskSchedulerController.update);
 
+
+routes.post('/events', (req, res) => {
+    console.log("Evento recebido: ", req.body.type)
+
+    res.send({});
+});
+
 export default routes;

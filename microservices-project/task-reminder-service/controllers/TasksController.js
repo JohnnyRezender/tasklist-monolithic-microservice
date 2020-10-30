@@ -1,6 +1,9 @@
 import {parseISO, startOfMinute, format, isPast} from 'date-fns';
 import {Request, Response} from 'express';
 import Queue from '../lib/queue';
+import axios from 'axios';
+import {randomBytes} from 'crypto';
+import api from '../lib/api';
 
 class TasksController
 {
@@ -30,6 +33,16 @@ class TasksController
         }
 
         Queue.add('scheduleReminder', params);
+
+        await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
+            id: randomBytes(4).toString('hex'),
+            type: 'reminderCreated',
+            data: {
+                dtNotificacao: dtNotificacao,
+                message: message
+            },
+            postId: Request.params.id
+        });
 
         return Response
             .status(200)
