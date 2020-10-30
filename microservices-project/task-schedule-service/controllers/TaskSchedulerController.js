@@ -30,6 +30,12 @@ class TaskSchedulerController
            }
        });
 
+       await axios.post(`${api.EVENT_BUS_API_URL}/events`, {
+            type: 'getTask',
+            data: {},
+            postId: Request.params.id
+        });
+
         return Response.status(200).json(serializedTasks);
    }
 
