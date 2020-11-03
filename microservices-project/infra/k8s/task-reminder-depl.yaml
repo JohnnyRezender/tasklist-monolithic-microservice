@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-reminder-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-reminder
+  template:
+    metadata:
+      labels:
+        app: task-reminder
+    spec:
+      containers:
+        - name: task-reminder
+          image: johnnyrezender/task-reminder
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-reminder-srv
+spec:
+  selector:
+    app: task-reminder
+  ports:
+    - name: task-reminder
+      protocol: TCP
+      port: 4002
+      targetPort: 4002

@@ -13,8 +13,10 @@ routes.put('/tasksSchedule', tasksController.create);
 routes.post('/events', (req, res) => {
     console.log("Evento recebido: ", req.body.type)
     const {type, data, postId} = req.body;
+
+    const isCreatingOrUpdating = type == 'taskCreated' || type == 'taskUpdated';
     
-    if (type == 'taskCreated' && data.FL_LEMBRETE) {
+    if (isCreatingOrUpdating) {
 
         axios.put(`${api.TASK_REMINDER_API_URL}/tasksSchedule`,
             {

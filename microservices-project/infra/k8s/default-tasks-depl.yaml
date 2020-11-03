@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: default-tasks-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: default-tasks
+  template:
+    metadata:
+      labels:
+        app: default-tasks
+    spec:
+      containers:
+        - name: default-tasks
+          image: johnnyrezender/default-tasks
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: default-tasks-srv
+spec:
+  selector:
+    app: default-tasks
+  ports:
+    - name: default-tasks
+      protocol: TCP
+      port: 3001
+      targetPort: 3001

@@ -77,12 +77,12 @@ class TaskSchedulerController
             .andWhere('ST_STATUS_TAS', task.ST_STATUS_TAS)
             .first();
 
-        if (taskExists) {
-            await transaction.rollback();
-            return Response
-                .status(400)
-                .json({error: 'Tarefa já criado!'});
-        };
+        // if (taskExists) {
+        //     await transaction.rollback();
+        //     return Response
+        //         .status(400)
+        //         .json({error: 'Tarefa já criado!'});
+        // };
 
         let result = "";
         const taskCreated = 
@@ -219,7 +219,8 @@ class TaskSchedulerController
                     ID_TASK_TAS: ID_TASK_TAS,
                     ST_TASK_TAS: ST_TASK_TAS,
                     DT_TASK_TAS: DT_TASK_TAS,
-                    ST_STATUS_TAS: ST_STATUS_TAS
+                    ST_STATUS_TAS: ST_STATUS_TAS,
+                    FL_LEMBRETE: true
                 },
                 postId: Request.params.id
             });
