@@ -1,5 +1,3 @@
-# Reminder
-
 ### 💻 Sobre o projeto
 
 Projeto apresentado como trabalho de conclusao de curso para o curso bacharel em Ciência da Computação na Ceunsp (Centro Universitário N. Sra. do Patrocínio).
