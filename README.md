@@ -1,6 +1,6 @@
 ### 💻 Sobre o projeto
 
-Projeto apresentado como trabalho de conclusao de curso para o curso bacharel em Ciência da Computação na Ceunsp (Centro Universitário N. Sra. do Patrocínio).
+Projeto apresentado como trabalho de conclusao de curso para obter a graduação bacharel em Ciência da Computação na Ceunsp (Centro Universitário N. Sra. do Patrocínio).
 
 Este projeto tem o objetivo de apresentar um estudo entre as duas arquiteturas de desenvolvimento de software: a arquitetura monolítica e a de microsserviços, 
 através de uma avaliação comparativa entre o desenvolvimento de uma aplicação monolítica de um sistema de lista de tarefas - desenvolvido utilizando as 
