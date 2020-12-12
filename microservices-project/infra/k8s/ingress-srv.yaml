@@ -1,0 +1,29 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-srv
+spec:
+  rules:
+  - host: task-schedule.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: task-schedule-clusterip-srv
+          servicePort: 3000
+      - path: /query
+        backend:
+          serviceName: query-srv
+          servicePort: 4002
+      - path: /defaultTasks
+        backend:
+          serviceName: default-tasks-srv
+          servicePort: 3001
+      - path: /notification
+        backend:
+          serviceName: notification-srv
+          servicePort: 3002
+      - path: /admin/queues
+        backend:
+          serviceName: task-reminder-srv
+          servicePort: 4002

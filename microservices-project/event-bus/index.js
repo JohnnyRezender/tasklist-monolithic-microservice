@@ -9,7 +9,7 @@ app.use(express.json());
 
 app.post('/events', (req, res) => {
     const event = req.body;
- 
+    console.log("evento recebido no event bus!")
     //Disparando events
     axios.post(
         `${api.API_URL_QUERY_SERVICE}/events`, 

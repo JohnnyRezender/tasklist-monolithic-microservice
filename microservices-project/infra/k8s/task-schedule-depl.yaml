@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-schedule-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-schedule
+  template:
+    metadata:
+      labels:
+        app: task-schedule
+    spec:
+      containers:
+        - name: task-schedule
+          image: johnnyrezender/task-schedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-schedule-clusterip-srv
+spec:
+  selector:
+    app: task-schedule
+  ports:
+    - name: task-schedule
+      protocol: TCP
+      port: 3000
+      targetPort: 3000

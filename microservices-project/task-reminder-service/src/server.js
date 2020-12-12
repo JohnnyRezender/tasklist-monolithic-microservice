@@ -11,8 +11,8 @@ app.use(express.json());
 
 app.use(routes);
 
-app.listen(3003, () =>{
-    console.log("Serviço: task-reminder-service rodando na porta 3003");
+app.listen(4002, () =>{
+    console.log("Serviço: task-reminder-service rodando na porta 4002");
 });
 
 BullBoard.setQueues(Queue.queues.map(queue => queue.bull));
